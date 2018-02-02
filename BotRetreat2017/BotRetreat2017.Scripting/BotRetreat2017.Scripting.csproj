@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Scripting" Version="2.4.0" />
+    <PackageReference Include="NETStandard.Library" Version="2.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\BotRetreat2017.Contracts\BotRetreat2017.Contracts.csproj" />
+    <ProjectReference Include="..\BotRetreat2017.Model\BotRetreat2017.Model.csproj" />
+    <ProjectReference Include="..\BotRetreat2017.Utilities\BotRetreat2017.Utilities.csproj" />
+  </ItemGroup>
+
+</Project>

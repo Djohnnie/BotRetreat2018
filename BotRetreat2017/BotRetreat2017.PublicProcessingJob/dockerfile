@@ -1,0 +1,10 @@
+﻿FROM microsoft/dotnet:2.0-runtime-jessie
+
+# Set the working directory
+WORKDIR /app
+
+# Copy the app
+COPY bin/Release/publish /app
+
+# Start the app
+ENTRYPOINT ["dotnet", "BotRetreat2017.PublicProcessingJob.dll"]
