@@ -35,8 +35,8 @@ namespace BotRetreat2018.Processing
                 foreach (Arena arena in arenas)
                 {
                     List<Bot> bots = await dbContext.Bots.Where(x =>
-                            !x.TimeOfDeath.HasValue && x.Deployments.Any(d => d.Arena.Id == arena.Id))
-                            .Include(x => x.Deployments).ThenInclude(x => x.Team).ToListAsync();
+                            !x.TimeOfDeath.HasValue && x.Arena.Id == arena.Id)
+                            .Include(x => x.Arena).Include(x => x.Team).ToListAsync();
 
                     // Get all health statistics from all bots before the iteration.
                     var botStats = bots.GetBotStats();

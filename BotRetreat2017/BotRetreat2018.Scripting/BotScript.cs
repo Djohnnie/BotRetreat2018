@@ -71,7 +71,9 @@ namespace BotRetreat2018.Scripting
                         CurrentStamina = 100,
                         LocationX = 1,
                         LocationY = 1,
-                        Orientation = Orientation.South
+                        Orientation = Orientation.South,
+                        Arena = arena,
+                        Team = team
                     };
                     var friendBot = new Bot
                     {
@@ -83,7 +85,9 @@ namespace BotRetreat2018.Scripting
                         CurrentStamina = 100,
                         LocationX = 1,
                         LocationY = 3,
-                        Orientation = Orientation.North
+                        Orientation = Orientation.North,
+                        Arena = arena,
+                        Team = team
                     };
                     var enemyBot = new Bot
                     {
@@ -95,30 +99,10 @@ namespace BotRetreat2018.Scripting
                         CurrentStamina = 100,
                         LocationX = 1,
                         LocationY = 5,
-                        Orientation = Orientation.North
-                    };
-                    var deployment = new Deployment
-                    {
+                        Orientation = Orientation.North,
                         Arena = arena,
-                        Bot = bot,
                         Team = team
                     };
-                    var deploymentFriend = new Deployment
-                    {
-                        Arena = arena,
-                        Bot = friendBot,
-                        Team = team
-                    };
-                    var deploymentEnemy = new Deployment
-                    {
-                        Arena = arena,
-                        Bot = enemyBot,
-                        Team = enemyTeam
-                    };
-                    team.Deployments = new List<Deployment> { deployment, deploymentFriend, deploymentEnemy };
-                    bot.Deployments = new List<Deployment> { deployment };
-                    friendBot.Deployments = new List<Deployment> { deploymentFriend };
-                    enemyBot.Deployments = new List<Deployment> { deploymentEnemy };
                     var coreGlobals = new ScriptGlobals(arena, bot, new[] { bot, friendBot, enemyBot }.ToList());
                     using (var sw = new SimpleStopwatch())
                     {

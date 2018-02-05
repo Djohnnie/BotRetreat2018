@@ -18,7 +18,7 @@ namespace BotRetreat2018.Scripting
             FriendlyBots = new List<IBot>();
             EnemyBots = new List<IBot>();
             PredatorBots = new List<IBot>();
-            var currentTeamName = bot.Deployments.Select(x => x.Team.Name).Distinct().Single();
+            var currentTeamName = bot.Team.Name.Single();
             var minimumX = 0;
             var minimumY = 0;
             var maximumX = arena.Width - 1;
@@ -58,7 +58,7 @@ namespace BotRetreat2018.Scripting
                         otherBot.LocationY >= minimumY && otherBot.LocationY <= maximumY)
                     {
                         Bots.Add(new VisibleBot(otherBot));
-                        var botTeamName = otherBot.Deployments.Select(x => x.Team.Name).Distinct().Single();
+                        var botTeamName = otherBot.Team.Name.Single();
                         if (botTeamName == currentTeamName)
                         {
                             FriendlyBots.Add(new VisibleBot(otherBot));

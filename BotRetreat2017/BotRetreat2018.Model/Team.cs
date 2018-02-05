@@ -18,6 +18,6 @@ namespace BotRetreat2018.Model
 
         public virtual Arena PersonalArena { get; set; }
 
-        public virtual ICollection<Deployment> Deployments { get; set; }
+        public virtual ICollection<Bot> Bots { get; set; }
     }
 }

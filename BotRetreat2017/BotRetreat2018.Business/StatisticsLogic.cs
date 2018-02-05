@@ -35,17 +35,16 @@ namespace BotRetreat2018.Business
                 if (team == null || !Crypt.EnhancedVerify(teamPassword, team.Password)) return null;
                 var arenas = await _dbContext.Arenas.Where(x => x.Active && (!x.Private || x.Name.ToUpper() == teamName.ToUpper())).ToListAsync();
                 var arenaIds = arenas.Select(x => x.Id);
-                var bots = await _dbContext.Bots.Where(x => x.Deployments.Any(d => arenaIds.Contains(d.ArenaId)))
-                    .Include(x => x.Deployments).ToListAsync();
+                var bots = await _dbContext.Bots.Where(x => arenaIds.Contains(x.Arena.Id)).ToListAsync();
                 arenas.ForEach(arena =>
                 {
-                    var bots4Arena = bots.Where(x => x.Deployments.Any(d => d.TeamId == team.Id)).ToList();
+                    var bots4Arena = bots.Where(x => x.Team.Id == team.Id).ToList();
                     var teamStatistic = _teamMapper.Map(team);
                     teamStatistic.ArenaId = arena.Id;
                     teamStatistic.ArenaName = arena.Name;
                     teamStatistic.TeamId = team.Id;
                     teamStatistic.TeamName = team.Name;
-                    teamStatistic.NumberOfDeployments = arena.Deployments.Count(x => x.Team.Id == team.Id);
+                    teamStatistic.NumberOfDeployments = arena.Bots.Count(x => x.Team.Id == team.Id);
                     teamStatistic.NumberOfLiveBots = bots4Arena.Count(x => x.CurrentPhysicalHealth > 0);
                     teamStatistic.NumberOfDeadBots = bots4Arena.Count(x => x.CurrentPhysicalHealth == 0);
                     var averageBotLife = bots.Where(x => x.TimeOfDeath.HasValue)
@@ -75,7 +74,7 @@ namespace BotRetreat2018.Business
                 var arena = await _dbContext.Arenas.SingleOrDefaultAsync(x => x.Name.ToUpper() == arenaName.ToUpper());
                 if (arena == null) return null;
 
-                var bots = await _dbContext.Bots.Where(x => x.Deployments.Any(d => d.ArenaId == arena.Id)).ToListAsync();
+                var bots = await _dbContext.Bots.Where(x => x.Arena.Id == arena.Id).ToListAsync();
 
                 bots.ForEach(bot =>
                 {

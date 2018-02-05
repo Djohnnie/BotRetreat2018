@@ -10,12 +10,6 @@ namespace BotRetreat2018.Client
 {
     public class DeploymentClient : ClientBase, IDeploymentClient
     {
-        public Task<DeploymentDto> Deploy(DeploymentDto deployment)
-        {
-            return Post<DeploymentDto, DeploymentDto>(
-               $"{BaseUri}/{RouteConstants.PREFIX}/{RouteConstants.POST_DEPLOYMENT}", deployment);
-        }
-
         public Task<Boolean> Available(String teamName, String arenaName)
         {
             var parameters = new Dictionary<String, String>

@@ -6,6 +6,7 @@ namespace BotRetreat2018.Model
     public class History : IEntity
     {
         public Guid Id { get; set; }
+
         public Int32 SysId { get; set; }
 
         public String Name { get; set; }
@@ -15,8 +16,6 @@ namespace BotRetreat2018.Model
         public HistoryType Type { get; set; }
 
         public Guid? ArenaId { get; set; }
-
-        public Guid? DeploymentId { get; set; }
 
         public Guid? BotId { get; set; }
 

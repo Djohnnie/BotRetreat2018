@@ -16,12 +16,11 @@ namespace BotRetreat2018.Business
         {
         }
 
-        private async Task Log(Arena arena, Deployment deployment, Bot bot, HistoryName name, String description, HistoryType type)
+        private async Task Log(Arena arena, Bot bot, HistoryName name, String description, HistoryType type)
         {
             var history = new History
             {
                 ArenaId = arena?.Id,
-                DeploymentId = deployment?.Id,
                 BotId = bot?.Id,
                 Name = name.GetName(),
                 Description = name.GetDescription(),
@@ -30,12 +29,11 @@ namespace BotRetreat2018.Business
             await _dbContext.History.AddAsync(history);
         }
 
-        private async Task Log(Arena arena, Deployment deployment, Bot bot, String description, HistoryType type)
+        private async Task Log(Arena arena, Bot bot, String description, HistoryType type)
         {
             var history = new History
             {
                 ArenaId = arena?.Id,
-                DeploymentId = deployment?.Id,
                 BotId = bot?.Id,
                 Name = "Timing",
                 Description = description,
@@ -44,24 +42,24 @@ namespace BotRetreat2018.Business
             await _dbContext.History.AddAsync(history);
         }
 
-        public Task LogMessage(Arena arena, Deployment deployment, Bot bot, HistoryName name, String description = null)
+        public Task LogMessage(Arena arena, Bot bot, HistoryName name, String description = null)
         {
-            return Log(arena, deployment, bot, name, description, HistoryType.Message);
+            return Log(arena, bot, name, description, HistoryType.Message);
         }
 
-        public Task LogWarning(Arena arena, Deployment deployment, Bot bot, HistoryName name, String description = null)
+        public Task LogWarning(Arena arena, Bot bot, HistoryName name, String description = null)
         {
-            return Log(arena, deployment, bot, name, description, HistoryType.Warning);
+            return Log(arena, bot, name, description, HistoryType.Warning);
         }
 
-        public Task LogError(Arena arena, Deployment deployment, Bot bot, HistoryName name, String description = null)
+        public Task LogError(Arena arena, Bot bot, HistoryName name, String description = null)
         {
-            return Log(arena, deployment, bot, name, description, HistoryType.Error);
+            return Log(arena, bot, name, description, HistoryType.Error);
         }
 
-        public Task LogTiming(Arena arena, Deployment deployment, Bot bot, String description)
+        public Task LogTiming(Arena arena, Bot bot, String description)
         {
-            return Log(arena, deployment, bot, description, HistoryType.Timing);
+            return Log(arena, bot, description, HistoryType.Timing);
         }
 
         public Task SaveChanges()

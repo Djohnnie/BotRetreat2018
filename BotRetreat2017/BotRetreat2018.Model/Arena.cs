@@ -26,6 +26,6 @@ namespace BotRetreat2018.Model
 
         public Int32 MaximumPoints { get; set; }
 
-        public virtual ICollection<Deployment> Deployments { get; set; }
+        public virtual ICollection<Bot> Bots { get; set; }
     }
 }

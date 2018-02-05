@@ -30,13 +30,13 @@ namespace BotRetreat2018.Business
         {
             var arena = await _dbContext.Arenas.SingleOrDefaultAsync(x => x.Name.ToUpper() == arenaName.ToUpper());
             if (arena == null) throw new BusinessException("Specified arena does not exist!");
-            var teams = await _dbContext.Teams.Include(x => x.Deployments).ThenInclude(x => x.Bot).ToListAsync();
+            var teams = await _dbContext.Teams.Include(x => x.Bots).ToListAsync();
 
             var topTeams = teams.Select(x => new TopTeamDto
             {
                 TeamName = x.Name,
-                NumberOfKills = x.Deployments.Where(d => d.ArenaId == arena.Id).Select(s => s.Bot).Sum(b => b.Kills),
-                AverageBotLife = TimeSpan.FromMilliseconds(x.Deployments.Where(d => d.ArenaId == arena.Id).Select(s => s.Bot).Where(s => s.TimeOfDeath.HasValue)
+                NumberOfKills = x.Bots.Where(d => d.Arena.Id == arena.Id).Sum(b => b.Kills),
+                AverageBotLife = TimeSpan.FromMilliseconds(x.Bots.Where(d => d.Arena.Id == arena.Id).Where(s => s.TimeOfDeath.HasValue)
                         .Select(s => (s.TimeOfDeath.Value - s.TimeOfBirth).TotalMilliseconds)
                         .AverageOrDefault(0)).ToString()
             }).ToList();
@@ -80,7 +80,7 @@ namespace BotRetreat2018.Business
                     await _dbContext.Arenas.Where(x => x.Active && (!x.Private || x.Name == teamName)).ToListAsync());
                 foreach (var arena in arenas)
                 {
-                    var lastDeployment = await _dbContext.Deployments.Where(x => x.Arena.Id == arena.Id && x.Team.Id == team.Id)
+                    var lastDeployment = await _dbContext.Bots.Where(x => x.Arena.Id == arena.Id && x.Team.Id == team.Id)
                             .OrderByDescending(x => x.DeploymentDateTime)
                             .FirstOrDefaultAsync();
                     arena.LastDeploymentDateTime = lastDeployment?.DeploymentDateTime;
@@ -114,9 +114,7 @@ namespace BotRetreat2018.Business
             var existingArena = await _dbContext.Arenas.SingleOrDefaultAsync(x => x.Id == arenaId);
             if (existingArena != null)
             {
-                var bots = await _dbContext.Deployments.Where(x => x.Arena.Id == existingArena.Id).Select(x => x.Bot).ToListAsync();
-                var deployments = await _dbContext.Deployments.Where(x => x.Arena.Id == existingArena.Id).ToListAsync();
-                deployments.ForEach(deployment => _dbContext.Deployments.Remove(deployment));
+                var bots = await _dbContext.Bots.Where(x => x.Arena.Id == existingArena.Id).ToListAsync();
                 bots.ForEach(bot => _dbContext.Bots.Remove(bot));
                 _dbContext.Arenas.Remove(existingArena);
                 await _dbContext.SaveChangesAsync();

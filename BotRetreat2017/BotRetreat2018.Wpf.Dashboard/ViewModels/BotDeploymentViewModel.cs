@@ -264,23 +264,6 @@ namespace BotRetreat2018.Wpf.Dashboard.ViewModels
                         LastAttackLocationX = 0,
                         LastAttackLocationY = 0
                     });
-                    if (bot != null)
-                    {
-                        var deployment = await _deploymentClient.Deploy(new DeploymentDto
-                        {
-                            ArenaName = SelectedArena.Name,
-                            BotName = BotName,
-                            TeamName = CurrentTeam.Name
-                        });
-                        if (deployment != null)
-                        {
-                            //BotName = "";
-                            //BotScript = "";
-                            //BotPhysicalHealth = 32000;
-                            //BotMentalHealth = 32000;
-                            //BotStamina = 32000;
-                        }
-                    }
                     RefreshArenas();
                 }
                 else

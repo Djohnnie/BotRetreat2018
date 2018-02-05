@@ -1,5 +1,4 @@
-﻿using System.Threading.Tasks;
-using BotRetreat2018.Model;
+﻿using BotRetreat2018.Model;
 using Microsoft.EntityFrameworkCore;
 
 namespace BotRetreat2018.DataAccess
@@ -11,8 +10,6 @@ namespace BotRetreat2018.DataAccess
         public DbSet<Arena> Arenas { get; set; }
 
         public DbSet<Bot> Bots { get; set; }
-
-        public DbSet<Deployment> Deployments { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -40,11 +37,6 @@ namespace BotRetreat2018.DataAccess
             modelBuilder.Entity<Bot>().HasKey(x => x.Id).ForSqlServerIsClustered(clustered: false);
             modelBuilder.Entity<Bot>().HasIndex(x => x.SysId).IsUnique().ForSqlServerIsClustered();
             modelBuilder.Entity<Bot>().Property(x => x.SysId).ValueGeneratedOnAdd();
-
-            modelBuilder.Entity<Deployment>().ToTable("DEPLOYMENTS");
-            modelBuilder.Entity<Deployment>().HasKey(x => x.Id).ForSqlServerIsClustered(clustered: false);
-            modelBuilder.Entity<Deployment>().HasIndex(x => x.SysId).IsUnique().ForSqlServerIsClustered();
-            modelBuilder.Entity<Deployment>().Property(x => x.SysId).ValueGeneratedOnAdd();
         }
     }
 }

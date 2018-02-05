@@ -6,7 +6,7 @@ namespace BotRetreat2018.Client.Interfaces
 {
     public interface IDeploymentClient
     {
-        Task<DeploymentDto> Deploy(DeploymentDto deployment);
+        //Task<DeploymentDto> Deploy(DeploymentDto deployment);
 
         Task<Boolean> Available(String teamName, String arenaName);
     }

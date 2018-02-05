@@ -28,16 +28,14 @@ namespace BotRetreat2018.Business
         {
             var arena = await _dbContext.Arenas.SingleOrDefaultAsync(x => x.Name == arenaName);
             if (arena == null) return new GameDto();
-            var deployments = await _dbContext.Deployments.Where(x => x.ArenaId == arena.Id)
-                .Where(x => !x.Bot.TimeOfDeath.HasValue || (DateTime.UtcNow - x.Bot.TimeOfDeath.Value).TotalMinutes < 2)
-                .Include(x => x.Team).Include(x => x.Bot).ToListAsync();
+            var bots = await _dbContext.Bots.Where(x => x.Arena.Id == arena.Id)
+                .Where(x => !x.TimeOfDeath.HasValue || (DateTime.UtcNow - x.TimeOfDeath.Value).TotalMinutes < 2)
+                .Include(x => x.Team).ToListAsync();
 
-            //var history = await _dbContext.History.Where(x => x.Arena.Name == arenaName).OrderByDescending(x => x.DateTime).ToListAsync();
-            var bots = deployments.Select(x => x.Bot).ToList();
             bots.ForEach(x =>
             {
                 x.Script = String.Empty;
-                x.Name = $"{x.Name} ({x.Deployments.Single().Team.Name})";
+                x.Name = $"{x.Name} ({x.Team.Name})";
             });
             return new GameDto
             {

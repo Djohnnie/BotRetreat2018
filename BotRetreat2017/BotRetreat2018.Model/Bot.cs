@@ -52,6 +52,10 @@ namespace BotRetreat2018.Model
 
         public DateTime? TimeOfDeath { get; set; }
 
-        public virtual ICollection<Deployment> Deployments { get; set; }
+        public DateTime DeploymentDateTime { get; set; }
+
+        public virtual Arena Arena { get; set; }
+
+        public virtual Team Team { get; set; }
     }
 }
