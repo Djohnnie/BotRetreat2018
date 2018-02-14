@@ -27,16 +27,19 @@ namespace BotRetreat2018.DataAccess
             modelBuilder.Entity<Team>().HasKey(x => x.Id).ForSqlServerIsClustered(clustered: false);
             modelBuilder.Entity<Team>().HasIndex(x => x.SysId).IsUnique().ForSqlServerIsClustered();
             modelBuilder.Entity<Team>().Property(x => x.SysId).ValueGeneratedOnAdd();
+            modelBuilder.Entity<Team>().HasIndex(x => x.Name).IsUnique();
 
             modelBuilder.Entity<Arena>().ToTable("ARENAS");
             modelBuilder.Entity<Arena>().HasKey(x => x.Id).ForSqlServerIsClustered(clustered: false);
             modelBuilder.Entity<Arena>().HasIndex(x => x.SysId).IsUnique().ForSqlServerIsClustered();
             modelBuilder.Entity<Arena>().Property(x => x.SysId).ValueGeneratedOnAdd();
+            modelBuilder.Entity<Arena>().HasIndex(x => x.Name).IsUnique();
 
             modelBuilder.Entity<Bot>().ToTable("BOTS");
             modelBuilder.Entity<Bot>().HasKey(x => x.Id).ForSqlServerIsClustered(clustered: false);
             modelBuilder.Entity<Bot>().HasIndex(x => x.SysId).IsUnique().ForSqlServerIsClustered();
             modelBuilder.Entity<Bot>().Property(x => x.SysId).ValueGeneratedOnAdd();
+            modelBuilder.Entity<Bot>().HasIndex(x => x.Name).IsUnique();
         }
     }
 }

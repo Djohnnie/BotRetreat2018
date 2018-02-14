@@ -262,7 +262,10 @@ namespace BotRetreat2018.Wpf.Dashboard.ViewModels
                         MaximumStamina = BotStamina,
                         CurrentStamina = BotStamina,
                         LastAttackLocationX = 0,
-                        LastAttackLocationY = 0
+                        LastAttackLocationY = 0,
+                        ArenaName = SelectedArena.Name,
+                        TeamName = CurrentTeam.Name,
+                        Password = _cacheService.Load<String>("PSWD")
                     });
                     RefreshArenas();
                 }

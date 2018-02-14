@@ -10,8 +10,6 @@ namespace BotRetreat2018.Client
 {
     public class StatisticsClient : ClientBase, IStatisticsClient
     {
-        public StatisticsClient() : base("http://botretreatstatistics.azurewebsites.net") { }
-
         public Task<List<TeamStatisticDto>> GetTeamStatistics(String teamName, String teamPassword)
         {
             var parameters = new Dictionary<String, String>

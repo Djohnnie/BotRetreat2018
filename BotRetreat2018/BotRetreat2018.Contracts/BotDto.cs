@@ -7,6 +7,12 @@ namespace BotRetreat2018.Contracts
     {
         public Guid Id { get; set; }
 
+        public String TeamName { get; set; }
+
+        public String Password { get; set; }
+
+        public String ArenaName { get; set; }
+
         public Boolean Predator { get; set; }
 
         public String Name { get; set; }

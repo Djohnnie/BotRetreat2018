@@ -42,10 +42,14 @@ namespace BotRetreat2018.ScriptValidation
 
             app.UseCors("AllowAll");
             app.UseMvc();
-            app.UseSwagger();
+            app.UseSwagger(c =>
+            {
+                c.RouteTemplate = "mcswag/{documentName}/swagger.json";
+            });
             app.UseSwaggerUI(c =>
             {
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "BotRetreat 2017");
+                c.SwaggerEndpoint("/mcswag/v1/swagger.json", "BotRetreat 2017");
+                c.RoutePrefix = "mcswag";
                 c.DocExpansion("list");
             });
         }

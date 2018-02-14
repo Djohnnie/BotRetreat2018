@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using BotRetreat2018.Model;
 using BotRetreat2018.Scripting.Interfaces;
 
@@ -18,7 +17,7 @@ namespace BotRetreat2018.Scripting
             FriendlyBots = new List<IBot>();
             EnemyBots = new List<IBot>();
             PredatorBots = new List<IBot>();
-            var currentTeamName = bot.Team.Name.Single();
+            var currentTeamName = bot.Team.Name;
             var minimumX = 0;
             var minimumY = 0;
             var maximumX = arena.Width - 1;
@@ -29,10 +28,10 @@ namespace BotRetreat2018.Scripting
                     minimumX = 0;
                     maximumX = arena.Width - 1;
                     minimumY = 0;
-                    maximumY = bot.LocationY;
+                    maximumY = bot.LocationY - 1;
                     break;
                 case Orientation.East:
-                    minimumX = bot.LocationX;
+                    minimumX = bot.LocationX + 1;
                     maximumX = arena.Width - 1;
                     minimumY = 0;
                     maximumY = arena.Height - 1;
@@ -40,12 +39,12 @@ namespace BotRetreat2018.Scripting
                 case Orientation.South:
                     minimumX = 0;
                     maximumX = arena.Width - 1;
-                    minimumY = bot.LocationY;
+                    minimumY = bot.LocationY + 1;
                     maximumY = arena.Height - 1;
                     break;
                 case Orientation.West:
                     minimumX = 0;
-                    maximumX = bot.LocationX;
+                    maximumX = bot.LocationX - 1;
                     minimumY = 0;
                     maximumY = arena.Height - 1;
                     break;
@@ -58,7 +57,7 @@ namespace BotRetreat2018.Scripting
                         otherBot.LocationY >= minimumY && otherBot.LocationY <= maximumY)
                     {
                         Bots.Add(new VisibleBot(otherBot));
-                        var botTeamName = otherBot.Team.Name.Single();
+                        var botTeamName = otherBot.Team.Name;
                         if (botTeamName == currentTeamName)
                         {
                             FriendlyBots.Add(new VisibleBot(otherBot));

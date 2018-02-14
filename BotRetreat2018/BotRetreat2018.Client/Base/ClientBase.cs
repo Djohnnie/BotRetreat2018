@@ -12,7 +12,7 @@ namespace BotRetreat2018.Client.Base
     {
         protected String BaseUri { get; }
 
-        public ClientBase(String baseUri = "http://botretreat.azurewebsites.net")
+        public ClientBase(String baseUri = "http://my.djohnnie.be:8992")
         {
             BaseUri = baseUri;
         }

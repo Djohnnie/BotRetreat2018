@@ -73,25 +73,5 @@ namespace BotRetreat2018.Business
             await _dbContext.SaveChangesAsync();
             return _teamMapper.Map(teamToCreate);
         }
-
-        public async Task<TeamDto> EditTeam(Guid teamId, String password, TeamRegistrationDto team)
-        {
-            Team teamToUpdate = await _dbContext.Teams.SingleOrDefaultAsync(x => x.Id == teamId);
-            if (teamToUpdate == null) { throw new BusinessException(""); }
-            if (!Crypt.EnhancedVerify(password, teamToUpdate.Password)) { throw new BusinessException(""); }
-            teamToUpdate.Name = team.Name;
-            teamToUpdate.Password = Crypt.HashPassword(team.Password, 10, enhancedEntropy: true);
-            await _dbContext.SaveChangesAsync();
-            return _teamMapper.Map(teamToUpdate);
-        }
-
-        public async Task RemoveTeam(Guid teamId, String password)
-        {
-            Team teamToRemove = await _dbContext.Teams.SingleOrDefaultAsync(x => x.Id == teamId);
-            if (teamToRemove == null) { throw new BusinessException(""); }
-            if (!Crypt.EnhancedVerify(password, teamToRemove.Password)) { throw new BusinessException(""); }
-            _dbContext.Teams.Remove(teamToRemove);
-            await _dbContext.SaveChangesAsync();
-        }
     }
 }

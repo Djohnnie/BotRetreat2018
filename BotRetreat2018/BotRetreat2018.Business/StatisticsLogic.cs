@@ -34,27 +34,26 @@ namespace BotRetreat2018.Business
                 var team = await _dbContext.Teams.SingleOrDefaultAsync(x => x.Name.ToUpper() == teamName.ToUpper());
                 if (team == null || !Crypt.EnhancedVerify(teamPassword, team.Password)) return null;
                 var arenas = await _dbContext.Arenas.Where(x => x.Active && (!x.Private || x.Name.ToUpper() == teamName.ToUpper())).ToListAsync();
-                var arenaIds = arenas.Select(x => x.Id);
-                var bots = await _dbContext.Bots.Where(x => arenaIds.Contains(x.Arena.Id)).ToListAsync();
+                var bots = await _dbContext.Bots.Where(x => x.Team.Id == team.Id).ToListAsync();
                 arenas.ForEach(arena =>
                 {
-                    var bots4Arena = bots.Where(x => x.Team.Id == team.Id).ToList();
+                    var bots4Arena = bots.Where(x => x.Arena.Id == arena.Id).ToList();
                     var teamStatistic = _teamMapper.Map(team);
                     teamStatistic.ArenaId = arena.Id;
                     teamStatistic.ArenaName = arena.Name;
                     teamStatistic.TeamId = team.Id;
                     teamStatistic.TeamName = team.Name;
-                    teamStatistic.NumberOfDeployments = arena.Bots.Count(x => x.Team.Id == team.Id);
+                    teamStatistic.NumberOfDeployments = bots4Arena.Count();
                     teamStatistic.NumberOfLiveBots = bots4Arena.Count(x => x.CurrentPhysicalHealth > 0);
-                    teamStatistic.NumberOfDeadBots = bots4Arena.Count(x => x.CurrentPhysicalHealth == 0);
-                    var averageBotLife = bots.Where(x => x.TimeOfDeath.HasValue)
-                        .Select(x => (x.TimeOfDeath.Value - x.TimeOfBirth).TotalMilliseconds)
-                        .AverageOrDefault(Double.MaxValue);
+                    teamStatistic.NumberOfDeadBots = bots4Arena.Count(x => x.CurrentPhysicalHealth <= 0);
+                    var averageBotLife = bots4Arena
+                        .Select(x => ((x.TimeOfDeath.HasValue ? x.TimeOfDeath.Value : DateTime.UtcNow) - x.TimeOfBirth).TotalMilliseconds)
+                            .AverageOrDefault(Double.MaxValue);
                     teamStatistic.AverageBotLife = averageBotLife == Double.MaxValue
                         ? TimeSpan.MaxValue
                         : TimeSpan.FromMilliseconds(averageBotLife);
                     teamStatistic.TotalNumberOfKills = bots4Arena.Select(x => x.Kills).Sum();
-                    teamStatistic.TotalNumberOfDeaths = bots4Arena.Count(x => x.CurrentPhysicalHealth == 0);
+                    teamStatistic.TotalNumberOfDeaths = bots4Arena.Count(x => x.CurrentPhysicalHealth <= 0);
                     teamStatistic.TotalPhysicalDamageDone = bots4Arena.Select(x => x.PhysicalDamageDone).Sum();
                     teamStatistic.TotalStaminaConsumed = bots4Arena.Select(x => x.MaximumStamina - x.CurrentStamina).Sum();
                     teamStatistics.Add(teamStatistic);

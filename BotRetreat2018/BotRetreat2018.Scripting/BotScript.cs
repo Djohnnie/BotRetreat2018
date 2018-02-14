@@ -38,7 +38,9 @@ namespace BotRetreat2018.Scripting
         {
             var scriptValidation = new ScriptValidationDto { Script = script, Messages = new List<ScriptValidationMessageDto>() };
 
-            if (script.Contains("CSharpCompilation"))
+            var decodedScript = script.Base64Decode();
+            var blockedTokens = new[] { "CSharpCompilation", "dynamic" };
+            if (blockedTokens.Any(x => decodedScript.Contains(x)))
             {
                 scriptValidation.Messages.Add(new ScriptValidationMessageDto { Message = "Script blocked!" });
                 return scriptValidation;

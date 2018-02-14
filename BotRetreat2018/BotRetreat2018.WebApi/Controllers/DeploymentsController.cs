@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
 using BotRetreat2018.Business.Interfaces;
-using BotRetreat2018.Contracts;
 using BotRetreat2018.Routes;
 using BotRetreat2018.WebApi.Helpers;
 using Microsoft.AspNetCore.Mvc;

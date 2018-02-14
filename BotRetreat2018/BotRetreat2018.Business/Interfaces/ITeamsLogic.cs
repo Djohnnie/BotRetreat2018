@@ -12,9 +12,5 @@ namespace BotRetreat2018.Business.Interfaces
         Task<TeamDto> GetTeam(String name, String password);
 
         Task<TeamDto> CreateTeam(TeamRegistrationDto team);
-
-        Task<TeamDto> EditTeam(Guid teamId, String password, TeamRegistrationDto team);
-
-        Task RemoveTeam(Guid teamId, String password);
     }
 }

@@ -86,7 +86,6 @@
                                 <RowDefinition />
                                 <RowDefinition />
                                 <RowDefinition />
-                                <RowDefinition />
                             </Grid.RowDefinitions>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto" />
@@ -111,6 +110,8 @@
                             <TextBlock Grid.Row="3" Grid.Column="1" Text="{Binding Stamina, Converter={StaticResource HealthToStringConverter}}" Margin="6" />
                             <Border Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="4" BorderThickness="0,0,0,1" BorderBrush="LightGray" />
 
+                            <TextBlock Grid.Row="4" Grid.Column="0" Text="Time since bot birth: " Margin="3" FontWeight="Bold" VerticalAlignment="Center" />
+                            <TextBlock Grid.Row="4" Grid.Column="1" Text="{Binding BotLife, Converter={StaticResource TimeSpanToStringConverter}}" Margin="3" FontSize="16" />
                             <TextBlock Grid.Row="4" Grid.Column="2" Text="Last action: " Margin="3" FontWeight="Bold" VerticalAlignment="Center" />
                             <TextBlock Grid.Row="4" Grid.Column="3" Text="{Binding LastAction}" Margin="3" FontSize="16" />
                             <Border Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="4" BorderThickness="0,0,0,1" BorderBrush="LightGray" />
@@ -126,10 +127,6 @@
                             <TextBlock Grid.Row="6" Grid.Column="2" Text="Total number of kills: " Margin="3" FontWeight="Bold" VerticalAlignment="Center" />
                             <TextBlock Grid.Row="6" Grid.Column="3" Text="{Binding TotalNumberOfKills}" Margin="3" FontSize="16" />
                             <Border Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="4" BorderThickness="0,0,0,1" BorderBrush="LightGray" />
-
-                            <TextBlock Grid.Row="7" Grid.Column="0" Text="Time since bot birth: " Margin="3" FontWeight="Bold" VerticalAlignment="Center" />
-                            <TextBlock Grid.Row="7" Grid.Column="1" Grid.ColumnSpan="3" Text="{Binding BotLife, Converter={StaticResource TimeSpanToStringConverter}}" Margin="3" FontSize="16" />
-                            <Border Grid.Row="7" Grid.Column="0" Grid.ColumnSpan="4" BorderThickness="0,0,0,1" BorderBrush="LightGray" />
                         </Grid>
                         <Border Background="#AAFFFFFF" Visibility="{Binding PhysicalHealth.Current, Converter={StaticResource ZeroToVisibleConverter}}" />
                     </Grid>

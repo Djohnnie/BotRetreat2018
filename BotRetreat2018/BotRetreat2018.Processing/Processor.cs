@@ -36,12 +36,17 @@ namespace BotRetreat2018.Processing
                 {
                     List<Bot> bots = await dbContext.Bots.Where(x =>
                             !x.TimeOfDeath.HasValue && x.Arena.Id == arena.Id)
-                            .Include(x => x.Arena).Include(x => x.Team).ToListAsync();
+                            .Include(x => x.Arena).Include(x => x.Team)
+                            .OrderByDescending(x => x.CurrentStamina)
+                            .ThenByDescending(x => x.DeploymentDateTime).ToListAsync();
 
                     // Get all health statistics from all bots before the iteration.
                     var botStats = bots.GetBotStats();
 
-                    await Task.WhenAll(bots.Select(bot => GoBot(bot, arena, bots)));
+                    foreach (Bot bot in bots)
+                    {
+                        await GoBot(bot, arena, bots);
+                    }
 
                     // Update last attack location
                     bots.UpdateLastAttackLocation();
