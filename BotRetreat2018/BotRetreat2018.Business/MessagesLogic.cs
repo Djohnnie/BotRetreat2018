@@ -31,7 +31,7 @@ namespace BotRetreat2018.Business
                 if (arena == null) return new List<MessageDto>();
 
                 var lastMessages = await _dbContext.Messages.Where(x => x.Bot.Arena.Id == arena.Id)
-                    .Include(x => x.Bot.Name).OrderByDescending(x => x.DateTime).Take(10).ToListAsync();
+                    .Include(x => x.Bot).OrderByDescending(x => x.DateTime).Take(10).ToListAsync();
                 List<MessageDto> messages = _messageMapper.Map(lastMessages);
 
                 Debug.WriteLine($"GetMessages - {sw.ElapsedMilliseconds}ms");

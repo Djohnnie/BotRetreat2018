@@ -33,7 +33,8 @@ namespace BotRetreat2018.Business
             {
                 var arena = await _dbContext.Arenas.SingleOrDefaultAsync(x => x.Name == arenaName);
                 if (arena == null) throw new BusinessException("Specified arena does not exist!");
-                var teams = await _dbContext.Teams.Include(x => x.Bots).ToListAsync();
+                var teams = await _dbContext.Teams.Where(x => x.Bots.Any(b => b.Arena.Id == arena.Id))
+                    .Include(x => x.Bots).ThenInclude(x => x.Arena).ToListAsync();
 
                 var topTeams = teams.Select(x => new TopTeamDto
                 {
