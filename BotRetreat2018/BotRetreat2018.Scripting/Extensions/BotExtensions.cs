@@ -63,5 +63,16 @@ namespace BotRetreat2018.Scripting.Extensions
                 }
             };
         }
+
+        public static void UpdateTimeOfDeath(this List<Bot> bots)
+        {
+            foreach (var bot in bots)
+            {
+                if (bot.CurrentPhysicalHealth == 0 && !bot.TimeOfDeath.HasValue)
+                {
+                    bot.TimeOfDeath = DateTime.UtcNow;
+                }
+            };
+        }
     }
 }

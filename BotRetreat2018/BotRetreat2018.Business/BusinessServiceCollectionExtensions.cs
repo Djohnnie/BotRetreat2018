@@ -17,6 +17,7 @@ namespace BotRetreat2018.Business
             serviceCollection.AddTransient<ILogLogic, LogLogic>();
             serviceCollection.AddTransient<IStatisticsLogic, StatisticsLogic>();
             serviceCollection.AddTransient<IGameLogic, GameLogic>();
+            serviceCollection.AddTransient<IMessagesLogic, MessagesLogic>();
             serviceCollection.AddBotRetreatMappers();
             serviceCollection.AddBotRetreatDataAccess();
         }

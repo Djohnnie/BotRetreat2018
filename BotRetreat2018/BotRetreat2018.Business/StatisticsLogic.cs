@@ -31,34 +31,36 @@ namespace BotRetreat2018.Business
             using (var sw = new SimpleStopwatch())
             {
                 var teamStatistics = new List<TeamStatisticDto>();
-                var team = await _dbContext.Teams.SingleOrDefaultAsync(x => x.Name.ToUpper() == teamName.ToUpper());
-                if (team == null || !Crypt.EnhancedVerify(teamPassword, team.Password)) return null;
-                var arenas = await _dbContext.Arenas.Where(x => x.Active && (!x.Private || x.Name.ToUpper() == teamName.ToUpper())).ToListAsync();
+                var team = await _dbContext.Teams.SingleOrDefaultAsync(x => x.Name == teamName);
+                if (team == null || VerifyPassword(teamPassword, team.Password)) return null;
+                var arenas = await _dbContext.Arenas.Where(x => x.Active && (!x.Private || x.Name == teamName)).ToListAsync();
                 var bots = await _dbContext.Bots.Where(x => x.Team.Id == team.Id).ToListAsync();
                 arenas.ForEach(arena =>
                 {
                     var bots4Arena = bots.Where(x => x.Arena.Id == arena.Id).ToList();
-                    var teamStatistic = _teamMapper.Map(team);
-                    teamStatistic.ArenaId = arena.Id;
-                    teamStatistic.ArenaName = arena.Name;
-                    teamStatistic.TeamId = team.Id;
-                    teamStatistic.TeamName = team.Name;
-                    teamStatistic.NumberOfDeployments = bots4Arena.Count();
-                    teamStatistic.NumberOfLiveBots = bots4Arena.Count(x => x.CurrentPhysicalHealth > 0);
-                    teamStatistic.NumberOfDeadBots = bots4Arena.Count(x => x.CurrentPhysicalHealth <= 0);
-                    var averageBotLife = bots4Arena
-                        .Select(x => ((x.TimeOfDeath.HasValue ? x.TimeOfDeath.Value : DateTime.UtcNow) - x.TimeOfBirth).TotalMilliseconds)
-                            .AverageOrDefault(Double.MaxValue);
-                    teamStatistic.AverageBotLife = averageBotLife == Double.MaxValue
-                        ? TimeSpan.MaxValue
-                        : TimeSpan.FromMilliseconds(averageBotLife);
-                    teamStatistic.TotalNumberOfKills = bots4Arena.Select(x => x.Kills).Sum();
-                    teamStatistic.TotalNumberOfDeaths = bots4Arena.Count(x => x.CurrentPhysicalHealth <= 0);
-                    teamStatistic.TotalPhysicalDamageDone = bots4Arena.Select(x => x.PhysicalDamageDone).Sum();
-                    teamStatistic.TotalStaminaConsumed = bots4Arena.Select(x => x.MaximumStamina - x.CurrentStamina).Sum();
-                    teamStatistics.Add(teamStatistic);
+                    if (bots4Arena.Count > 0)
+                    {
+                        var teamStatistic = _teamMapper.Map(team);
+                        teamStatistic.ArenaId = arena.Id;
+                        teamStatistic.ArenaName = arena.Name;
+                        teamStatistic.TeamId = team.Id;
+                        teamStatistic.TeamName = team.Name;
+                        teamStatistic.NumberOfDeployments = bots4Arena.Count;
+                        teamStatistic.NumberOfLiveBots = bots4Arena.Count(x => x.CurrentPhysicalHealth > 0);
+                        teamStatistic.NumberOfDeadBots = bots4Arena.Count(x => x.CurrentPhysicalHealth <= 0);
+                        var averageBotLife = bots4Arena.Select(
+                            x => ((x.TimeOfDeath ?? DateTime.UtcNow) - x.TimeOfBirth).TotalMilliseconds).AverageOrDefault();
+                        teamStatistic.AverageBotLife = TimeSpan.FromMilliseconds(averageBotLife);
+                        teamStatistic.TotalNumberOfKills = bots4Arena.Select(x => x.Kills).Sum();
+                        teamStatistic.TotalNumberOfDeaths = bots4Arena.Count(x => x.CurrentPhysicalHealth <= 0);
+                        teamStatistic.TotalPhysicalDamageDone = bots4Arena.Select(x => x.PhysicalDamageDone).Sum();
+                        teamStatistic.TotalStaminaConsumed =
+                            bots4Arena.Select(x => x.MaximumStamina - x.CurrentStamina).Sum();
+                        teamStatistics.Add(teamStatistic);
+                    }
                 });
                 Debug.WriteLine($"GetTeamStatistics - {sw.ElapsedMilliseconds}ms");
+                Console.WriteLine($"GetTeamStatistics - {sw.ElapsedMilliseconds}ms");
                 return teamStatistics;
             }
         }
@@ -68,9 +70,9 @@ namespace BotRetreat2018.Business
             using (var sw = new SimpleStopwatch())
             {
                 var botStatistics = new List<BotStatisticDto>();
-                var team = await _dbContext.Teams.SingleOrDefaultAsync(x => x.Name.ToUpper() == teamName.ToUpper());
-                if (team == null || !Crypt.EnhancedVerify(teamPassword, team.Password)) return null;
-                var arena = await _dbContext.Arenas.SingleOrDefaultAsync(x => x.Name.ToUpper() == arenaName.ToUpper());
+                var team = await _dbContext.Teams.SingleOrDefaultAsync(x => x.Name == teamName);
+                if (team == null || VerifyPassword(teamPassword, team.Password)) return null;
+                var arena = await _dbContext.Arenas.SingleOrDefaultAsync(x => x.Name == arenaName);
                 if (arena == null) return null;
 
                 var bots = await _dbContext.Bots.Where(x => x.Arena.Id == arena.Id).ToListAsync();
@@ -105,8 +107,23 @@ namespace BotRetreat2018.Business
                     botStatistics.Add(botStatistic);
                 });
                 Debug.WriteLine($"GetBotStatistics - {sw.ElapsedMilliseconds}ms");
+                Console.WriteLine($"GetBotStatistics - {sw.ElapsedMilliseconds}ms");
                 return botStatistics;
             }
         }
+
+        private Boolean VerifyPassword(String password, String hash)
+        {
+            if (!_passwords.ContainsKey(password))
+            {
+                if (Crypt.EnhancedVerify(password, hash))
+                {
+                    _passwords.Add(password, hash);
+                }
+            }
+            return !_passwords.ContainsKey(password) || _passwords[password] != hash;
+        }
+
+        private static readonly Dictionary<String, String> _passwords = new Dictionary<String, String>();
     }
 }

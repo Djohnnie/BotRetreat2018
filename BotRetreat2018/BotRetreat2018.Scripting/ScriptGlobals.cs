@@ -34,6 +34,8 @@ namespace BotRetreat2018.Scripting
 
         private Dictionary<String, String> _0534fba27330469a120b08d53b05b963;
 
+        private List<Message> _316dc6cddb7e4a82b152a7a03b243655;
+
         #endregion
 
         #region -_ Constants _-
@@ -89,7 +91,7 @@ namespace BotRetreat2018.Scripting
 
         #region -_ Construction _-
 
-        public ScriptGlobals(Arena arena, Bot bot, List<Bot> bots)
+        public ScriptGlobals(Arena arena, Bot bot, List<Bot> bots, List<Message> messages)
         {
             _e55472035b434b1ea185cf32ece2b8bc = bot;
             _6f4e9d2c3f474f2fa08d833e05cbba60 = bots ?? new List<Bot>();
@@ -109,6 +111,7 @@ namespace BotRetreat2018.Scripting
             _lastAttackLocation = new Position { X = -1, Y = -1 };
             Vision = new FieldOfView(arena, bot, bots);
             _0534fba27330469a120b08d53b05b963 = bot.Memory.Deserialize<Dictionary<String, String>>() ?? new Dictionary<String, String>();
+            _316dc6cddb7e4a82b152a7a03b243655 = messages;
         }
 
         #endregion
@@ -330,6 +333,16 @@ namespace BotRetreat2018.Scripting
             {
                 _0534fba27330469a120b08d53b05b963.Remove(key);
             }
+        }
+
+        public void SendMessage(String message)
+        {
+            _316dc6cddb7e4a82b152a7a03b243655.Add(new Message
+            {
+                Content = message,
+                DateTime = DateTime.UtcNow,
+                Bot = _e55472035b434b1ea185cf32ece2b8bc
+            });
         }
 
         #endregion

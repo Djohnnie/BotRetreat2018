@@ -39,5 +39,7 @@ namespace BotRetreat2018.Routes
 
         public const String GET_STATISTICS_TEAM = "statistics/team/{teamName}/{teamPassword}";
         public const String GET_STATISTICS_BOT = "statistics/bot/{teamName}/{teamPassword}/{arenaName}";
+
+        public const String MESSAGES = "messages/{arenaName}";
     }
 }

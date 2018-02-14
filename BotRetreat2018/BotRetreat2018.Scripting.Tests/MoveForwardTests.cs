@@ -30,7 +30,7 @@ namespace BotRetreat2018.Scripting.Tests
 
             Script botScript = await BotScript.PrepareScript("MoveForward();".Base64Encode());
             botScript.Compile();
-            ScriptGlobals globals = new ScriptGlobals(arena, bot, new List<Bot>());
+            ScriptGlobals globals = new ScriptGlobals(arena, bot, new List<Bot>(), new List<Message>());
 
             // Act
             await botScript.RunAsync(globals);
@@ -64,7 +64,7 @@ namespace BotRetreat2018.Scripting.Tests
 
             Script botScript = await BotScript.PrepareScript("MoveForward();".Base64Encode());
             botScript.Compile();
-            ScriptGlobals globals = new ScriptGlobals(arena, bot, new List<Bot>());
+            ScriptGlobals globals = new ScriptGlobals(arena, bot, new List<Bot>(), new List<Message>());
 
             // Act
             await botScript.RunAsync(globals);
@@ -98,7 +98,7 @@ namespace BotRetreat2018.Scripting.Tests
 
             Script botScript = await BotScript.PrepareScript("MoveForward();".Base64Encode());
             botScript.Compile();
-            ScriptGlobals globals = new ScriptGlobals(arena, bot, new List<Bot>());
+            ScriptGlobals globals = new ScriptGlobals(arena, bot, new List<Bot>(), new List<Message>());
 
             // Act
             await botScript.RunAsync(globals);
@@ -132,7 +132,7 @@ namespace BotRetreat2018.Scripting.Tests
 
             Script botScript = await BotScript.PrepareScript("MoveForward();".Base64Encode());
             botScript.Compile();
-            ScriptGlobals globals = new ScriptGlobals(arena, bot, new List<Bot>());
+            ScriptGlobals globals = new ScriptGlobals(arena, bot, new List<Bot>(), new List<Message>());
 
             // Act
             await botScript.RunAsync(globals);

@@ -27,7 +27,7 @@ namespace BotRetreat2018.Scripting
                 var botRetreatScripting = typeof(IBot).Assembly;
                 var dynamic = typeof(DynamicAttribute).Assembly;
                 var scriptOptions = ScriptOptions.Default.AddReferences(mscorlib, systemCore, botRetreatModel, botRetreatScripting, dynamic);
-                scriptOptions = scriptOptions.WithImports("System", "System.Linq", "System.Collections.Generic", "BotRetreat2018.Model", "BotRetreat2018.Scripting.Interfaces", "System.Runtime.CompilerServices");
+                scriptOptions = scriptOptions.WithImports("System", "System.Linq", "System.Collections", "System.Collections.Generic", "BotRetreat2018.Model", "BotRetreat2018.Scripting.Interfaces", "System.Runtime.CompilerServices");
                 var botScript = CSharpScript.Create(decodedScript, scriptOptions, typeof(ScriptGlobals));
                 botScript.WithOptions(botScript.Options.AddReferences(mscorlib, systemCore));
                 return botScript;
@@ -105,7 +105,7 @@ namespace BotRetreat2018.Scripting
                         Arena = arena,
                         Team = team
                     };
-                    var coreGlobals = new ScriptGlobals(arena, bot, new[] { bot, friendBot, enemyBot }.ToList());
+                    var coreGlobals = new ScriptGlobals(arena, bot, new[] { bot, friendBot, enemyBot }.ToList(), new List<Message>());
                     using (var sw = new SimpleStopwatch())
                     {
                         try

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using BotRetreat2018.Business.Base;
@@ -28,19 +29,25 @@ namespace BotRetreat2018.Business
 
         public async Task<List<TopTeamDto>> GetTopTeams(String arenaName)
         {
-            var arena = await _dbContext.Arenas.SingleOrDefaultAsync(x => x.Name.ToUpper() == arenaName.ToUpper());
-            if (arena == null) throw new BusinessException("Specified arena does not exist!");
-            var teams = await _dbContext.Teams.Include(x => x.Bots).ToListAsync();
-
-            var topTeams = teams.Select(x => new TopTeamDto
+            using (var sw = new SimpleStopwatch())
             {
-                TeamName = x.Name,
-                NumberOfKills = x.Bots.Where(d => d.Arena.Id == arena.Id).Sum(b => b.Kills),
-                AverageBotLife = TimeSpan.FromMilliseconds(x.Bots.Where(d => d.Arena.Id == arena.Id).Where(s => s.TimeOfDeath.HasValue)
-                        .Select(s => (s.TimeOfDeath.Value - s.TimeOfBirth).TotalMilliseconds)
-                        .AverageOrDefault(0)).ToString()
-            }).ToList();
-            return topTeams.OrderByDescending(x => x.NumberOfKills).Take(3).ToList();
+                var arena = await _dbContext.Arenas.SingleOrDefaultAsync(x => x.Name == arenaName);
+                if (arena == null) throw new BusinessException("Specified arena does not exist!");
+                var teams = await _dbContext.Teams.Include(x => x.Bots).ToListAsync();
+
+                var topTeams = teams.Select(x => new TopTeamDto
+                {
+                    TeamName = x.Name,
+                    NumberOfKills = x.Bots.Where(d => d.Arena.Id == arena.Id).Sum(b => b.Kills),
+                    AverageBotLife = TimeSpan.FromMilliseconds(x.Bots.Where(d => d.Arena.Id == arena.Id)
+                            .Select(s => ((s.TimeOfDeath ?? DateTime.UtcNow) - s.TimeOfBirth).TotalMilliseconds)
+                            .AverageOrDefault()).ToString()
+                }).ToList();
+
+                Debug.WriteLine($"GetTopTeams - {sw.ElapsedMilliseconds}ms");
+                Console.WriteLine($"GetTopTeams - {sw.ElapsedMilliseconds}ms");
+                return topTeams.OrderByDescending(x => x.NumberOfKills).ThenByDescending(x => x.AverageBotLife).Take(3).ToList();
+            }
         }
 
         public async Task<List<ArenaDto>> GetAllArenas()

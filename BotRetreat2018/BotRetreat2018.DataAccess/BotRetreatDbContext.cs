@@ -11,6 +11,8 @@ namespace BotRetreat2018.DataAccess
 
         public DbSet<Bot> Bots { get; set; }
 
+        public DbSet<Message> Messages { get; set; }
+
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             optionsBuilder.UseSqlServer("");
@@ -40,6 +42,12 @@ namespace BotRetreat2018.DataAccess
             modelBuilder.Entity<Bot>().HasIndex(x => x.SysId).IsUnique().ForSqlServerIsClustered();
             modelBuilder.Entity<Bot>().Property(x => x.SysId).ValueGeneratedOnAdd();
             modelBuilder.Entity<Bot>().HasIndex(x => x.Name).IsUnique();
+
+            modelBuilder.Entity<Message>().ToTable("MESSAGES");
+            modelBuilder.Entity<Message>().HasKey(x => x.Id).ForSqlServerIsClustered(clustered: false);
+            modelBuilder.Entity<Message>().HasIndex(x => x.SysId).IsUnique().ForSqlServerIsClustered();
+            modelBuilder.Entity<Message>().Property(x => x.SysId).ValueGeneratedOnAdd();
+            modelBuilder.Entity<Message>().HasIndex(x => x.DateTime);
         }
     }
 }

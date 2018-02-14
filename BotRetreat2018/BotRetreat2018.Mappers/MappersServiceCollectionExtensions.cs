@@ -17,6 +17,7 @@ namespace BotRetreat2018.Mappers
             serviceCollection.AddTransient<IMapper<Team, TeamStatisticDto>, TeamStatisticMapper>();
             serviceCollection.AddTransient<IMapper<Bot, BotStatisticDto>, BotStatisticMapper>();
             serviceCollection.AddTransient<IMapper<History, HistoryDto>, HistoryMapper>();
+            serviceCollection.AddTransient<IMapper<Message, MessageDto>, MessageMapper>();
         }
     }
 }

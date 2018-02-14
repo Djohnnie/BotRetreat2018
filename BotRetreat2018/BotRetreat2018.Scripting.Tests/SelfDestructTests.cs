@@ -27,7 +27,7 @@ namespace BotRetreat2018.Scripting.Tests
 
             Script botScript = await BotScript.PrepareScript("SelfDestruct();".Base64Encode());
             botScript.Compile();
-            ScriptGlobals globals = new ScriptGlobals(arena, bot, new List<Bot>());
+            ScriptGlobals globals = new ScriptGlobals(arena, bot, new List<Bot>(), new List<Message>());
 
             // Act
             await botScript.RunAsync(globals);
@@ -57,7 +57,7 @@ namespace BotRetreat2018.Scripting.Tests
 
             Script botScript = await BotScript.PrepareScript("SelfDestruct();".Base64Encode());
             botScript.Compile();
-            ScriptGlobals globals = new ScriptGlobals(arena, bot, new List<Bot> { bot1, bot2, bot3, bot4, bot5, bot6, bot7, bot8 });
+            ScriptGlobals globals = new ScriptGlobals(arena, bot, new List<Bot> { bot1, bot2, bot3, bot4, bot5, bot6, bot7, bot8 }, new List<Message>());
 
             // Act
             await botScript.RunAsync(globals);
@@ -104,7 +104,7 @@ namespace BotRetreat2018.Scripting.Tests
 
             Script botScript = await BotScript.PrepareScript("SelfDestruct();".Base64Encode());
             botScript.Compile();
-            ScriptGlobals globals = new ScriptGlobals(arena, bot, new List<Bot> { bot01, bot02, bot03, bot04, bot05, bot06, bot07, bot08, bot09, bot10, bot11, bot12, bot13, bot14, bot15, bot16 });
+            ScriptGlobals globals = new ScriptGlobals(arena, bot, new List<Bot> { bot01, bot02, bot03, bot04, bot05, bot06, bot07, bot08, bot09, bot10, bot11, bot12, bot13, bot14, bot15, bot16 }, new List<Message>());
 
             // Act
             await botScript.RunAsync(globals);

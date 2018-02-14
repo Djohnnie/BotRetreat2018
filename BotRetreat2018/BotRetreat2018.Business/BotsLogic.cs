@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using BotRetreat2018.Business.Base;
@@ -31,78 +32,99 @@ namespace BotRetreat2018.Business
 
         public async Task<BotDto> CreateBot(BotDto bot)
         {
-            var existingBot = await _dbContext.Bots.SingleOrDefaultAsync(x => x.Name == bot.Name);
-            if (existingBot != null) { throw new BusinessException($"Bot with name {bot.Name} already exists!"); }
-
-            var team = await _dbContext.Teams.SingleOrDefaultAsync(x => x.Name == bot.TeamName);
-            if (team == null) { throw new BusinessException($"Team '{bot.TeamName}' is unknown!"); }
-
-            if (!Crypt.EnhancedVerify(bot.Password, team.Password))
+            using (var sw = new SimpleStopwatch())
             {
-                throw new BusinessException($"Password for '{bot.TeamName}' is incorrect!");
-            }
+                var existingBot = await _dbContext.Bots.SingleOrDefaultAsync(x => x.Name == bot.Name);
+                if (existingBot != null) { throw new BusinessException($"Bot with name {bot.Name} already exists!"); }
 
-            var arena = await _dbContext.Arenas.SingleOrDefaultAsync(x => x.Name == bot.ArenaName);
-            if (arena == null) { throw new BusinessException($"Arena '{bot.ArenaName}' does not exist!"); }
+                var team = await _dbContext.Teams.SingleOrDefaultAsync(x => x.Name == bot.TeamName);
+                if (team == null) { throw new BusinessException($"Team '{bot.TeamName}' is unknown!"); }
 
-            if (bot.MaximumPhysicalHealth < 0 || bot.MaximumStamina < 0)
-            {
-                throw new BusinessException($"Number of assigned bot points is not valid!");
-            }
-
-            var assignedPoints = bot.MaximumStamina + bot.MaximumPhysicalHealth;
-            if (assignedPoints > arena.MaximumPoints)
-            {
-                throw new BusinessException($"Number of assigned bot points ({assignedPoints}) is larger than maximum allowed ({arena.MaximumPoints})!");
-            }
-
-            var decodedScript = bot.Script.Base64Decode();
-            var blockedTokens = new[] { "CSharpCompilation", "dynamic" };
-            if (blockedTokens.Any(x => decodedScript.Contains(x)))
-            {
-                throw new BusinessException("Script blocked!");
-            }
-
-            var lastDeployment = await _dbContext.Bots
-                .Where(x => x.Arena.Id == arena.Id)
-                .OrderByDescending(x => x.DeploymentDateTime)
-                .FirstOrDefaultAsync();
-
-            if (lastDeployment != null && !team.Predator)
-            {
-                var timeSinceLastDeployment = DateTime.UtcNow - lastDeployment.DeploymentDateTime;
-                if (timeSinceLastDeployment < arena.DeploymentRestriction && !bot.Predator)
+                if (!Crypt.EnhancedVerify(bot.Password, team.Password))
                 {
-                    throw new BusinessException($"Deployment restriction of {arena.DeploymentRestriction} applies!");
+                    throw new BusinessException($"Password for '{bot.TeamName}' is incorrect!");
                 }
-            }
 
-            var botEntity = _botMapper.Map(bot);
-            botEntity.TimeOfBirth = DateTime.UtcNow;
-            botEntity.DeploymentDateTime = DateTime.UtcNow;
-            botEntity.Arena = arena;
-            botEntity.Team = team;
+                var arena = await _dbContext.Arenas.SingleOrDefaultAsync(x => x.Name == bot.ArenaName);
+                if (arena == null) { throw new BusinessException($"Arena '{bot.ArenaName}' does not exist!"); }
 
-            var existingBots = await _dbContext.Bots.Where(x => x.Arena.Id == arena.Id)
-                    .Where(x => x.CurrentPhysicalHealth > 0)
-                    .Select(b => new { b.LocationX, b.LocationY }).ToListAsync();
-            var randomGenerator = new Random();
-            var locationFound = false;
-            while (!locationFound)
-            {
-                botEntity.LocationX = (Int16)randomGenerator.Next(0, arena.Width);
-                botEntity.LocationY = (Int16)randomGenerator.Next(0, arena.Height);
+                if (bot.MaximumPhysicalHealth < 0 || bot.MaximumStamina < 0)
+                {
+                    throw new BusinessException($"Number of assigned bot points is not valid!");
+                }
+
+                var assignedPoints = bot.MaximumStamina + bot.MaximumPhysicalHealth;
+                if (assignedPoints > arena.MaximumPoints)
+                {
+                    throw new BusinessException($"Number of assigned bot points ({assignedPoints}) is larger than maximum allowed ({arena.MaximumPoints})!");
+                }
+
+                var decodedScript = bot.Script.Base64Decode();
+                var blockedTokens = new[] { "CSharpCompilation", "dynamic" };
+                if (blockedTokens.Any(x => decodedScript.Contains(x)))
+                {
+                    throw new BusinessException("Script blocked!");
+                }
+
+                var lastDeployment = await _dbContext.Bots
+                    .Where(x => x.Arena.Id == arena.Id)
+                    .OrderByDescending(x => x.DeploymentDateTime)
+                    .FirstOrDefaultAsync();
+
+                if (lastDeployment != null && !team.Predator)
+                {
+                    var timeSinceLastDeployment = DateTime.UtcNow - lastDeployment.DeploymentDateTime;
+                    if (timeSinceLastDeployment < arena.DeploymentRestriction && !bot.Predator)
+                    {
+                        throw new BusinessException($"Deployment restriction of {arena.DeploymentRestriction} applies!");
+                    }
+                }
+
+                var botEntity = _botMapper.Map(bot);
+                botEntity.TimeOfBirth = DateTime.UtcNow;
+                botEntity.DeploymentDateTime = DateTime.UtcNow;
+                botEntity.Arena = arena;
+                botEntity.Team = team;
+                botEntity.CurrentPhysicalHealth = botEntity.MaximumPhysicalHealth;
+                botEntity.CurrentStamina = botEntity.MaximumStamina;
+
+                var existingBots = await _dbContext.Bots.Where(x => x.Arena.Id == arena.Id)
+                        .Where(x => x.CurrentPhysicalHealth > 0)
+                        .Select(b => new { b.LocationX, b.LocationY }).ToListAsync();
+
+                if (existingBots.Count >= arena.Width * arena.Height)
+                {
+                    throw new BusinessException("Arena is full!");
+                }
+
+                List<Position> availableLocations = new List<Position>();
+                for (Int16 x = 0; x < arena.Width; x++)
+                {
+                    for (Int16 y = 0; y < arena.Width; y++)
+                    {
+                        if (!existingBots.Any(l => l.LocationX == x && l.LocationY == y))
+                        {
+                            availableLocations.Add(new Position { X = x, Y = y });
+                        }
+                    }
+                }
+
+                var randomGenerator = new Random();
+
+                Position availableLocation = availableLocations[randomGenerator.Next(0, availableLocations.Count)];
+
+                botEntity.LocationX = availableLocation.X;
+                botEntity.LocationY = availableLocation.Y;
                 botEntity.Orientation = (Orientation)randomGenerator.Next(0, 4);
-                if (!existingBots.Any(l => l.LocationX == bot.LocationX && l.LocationY == bot.LocationY))
-                {
-                    locationFound = true;
-                }
-            }
 
-            _dbContext.Bots.Add(botEntity);
-            await _dbContext.SaveChangesAsync();
-            return _botMapper.Map(
-                await _dbContext.Bots.SingleOrDefaultAsync(x => x.Id == botEntity.Id));
+                _dbContext.Bots.Add(botEntity);
+                await _dbContext.SaveChangesAsync();
+
+                Debug.WriteLine($"CreateBot - {sw.ElapsedMilliseconds}ms");
+                Console.WriteLine($"CreateBot - {sw.ElapsedMilliseconds}ms");
+                return _botMapper.Map(
+                    await _dbContext.Bots.SingleOrDefaultAsync(x => x.Id == botEntity.Id));
+            }
         }
     }
 }

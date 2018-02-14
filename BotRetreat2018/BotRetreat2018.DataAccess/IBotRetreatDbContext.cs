@@ -10,5 +10,7 @@ namespace BotRetreat2018.DataAccess
         DbSet<Arena> Arenas { get; set; }
 
         DbSet<Bot> Bots { get; set; }
+
+        DbSet<Message> Messages { get; set; }
     }
 }

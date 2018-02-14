@@ -40,12 +40,14 @@ namespace BotRetreat2018.Processing
                             .OrderByDescending(x => x.CurrentStamina)
                             .ThenByDescending(x => x.DeploymentDateTime).ToListAsync();
 
+                    List<Message> messages = new List<Message>();
+
                     // Get all health statistics from all bots before the iteration.
                     var botStats = bots.GetBotStats();
 
                     foreach (Bot bot in bots)
                     {
-                        await GoBot(bot, arena, bots);
+                        await GoBot(bot, arena, bots, messages);
                     }
 
                     // Update last attack location
@@ -54,15 +56,18 @@ namespace BotRetreat2018.Processing
                     // Update all health statistics from all bots after the iteration.
                     bots.UpdateStatDrains(botStats);
 
+                    // Add all messages to the database.
+                    dbContext.Messages.AddRange(messages);
+
                     await dbContext.SaveChangesAsync();
                 }
             }
         }
 
-        private async Task GoBot(Bot bot, Arena arena, List<Bot> bots)
+        private async Task GoBot(Bot bot, Arena arena, List<Bot> bots, List<Message> messages)
         {
             Script botScript = await GetCompiledBotScript(bot);
-            ScriptGlobals globals = new ScriptGlobals(arena, bot, bots);
+            ScriptGlobals globals = new ScriptGlobals(arena, bot, bots, messages);
 
             try
             {
