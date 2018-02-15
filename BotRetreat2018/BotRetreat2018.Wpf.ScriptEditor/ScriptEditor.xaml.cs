@@ -5,6 +5,7 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
+using System.Windows.Input;
 using System.Windows.Media;
 
 namespace BotRetreat2018.Wpf.ScriptEditor
@@ -102,6 +103,18 @@ namespace BotRetreat2018.Wpf.ScriptEditor
             };
 
             CurrentHighlighter = HighlighterManager.Instance.Highlighters["C#"];
+        }
+
+        protected override void OnPreviewKeyDown(KeyEventArgs e)
+        {
+            if (e.Key == Key.Tab)
+            {
+                String tab = new String(' ', 4);
+                int caretPosition = base.CaretIndex;
+                base.Text = base.Text.Insert(caretPosition, tab);
+                base.CaretIndex = caretPosition + 4;
+                e.Handled = true;
+            }
         }
 
         protected override void OnRender(DrawingContext drawingContext)

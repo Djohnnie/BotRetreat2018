@@ -66,7 +66,7 @@ namespace BotRetreat2018.Processing
 
         private async Task GoBot(Bot bot, Arena arena, List<Bot> bots, List<Message> messages)
         {
-            Script botScript = await GetCompiledBotScript(bot);
+            Script botScript = GetCompiledBotScript(bot);
             ScriptGlobals globals = new ScriptGlobals(arena, bot, bots, messages);
 
             try
@@ -83,11 +83,11 @@ namespace BotRetreat2018.Processing
             }
         }
 
-        private async Task<Script> GetCompiledBotScript(Bot bot)
+        private Script GetCompiledBotScript(Bot bot)
         {
             if (!_cache.ScriptStored(bot))
             {
-                var botScript = await BotScript.PrepareScript(bot.Script);
+                var botScript = BotScript.PrepareScript(bot.Script);
                 botScript.Compile();
                 _cache.StoreScript(bot, botScript);
             }

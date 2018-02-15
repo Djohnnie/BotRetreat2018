@@ -25,7 +25,7 @@ namespace BotRetreat2018.Scripting.Tests
                 Team = team
             };
 
-            Script botScript = await BotScript.PrepareScript("SelfDestruct();".Base64Encode());
+            Script botScript = BotScript.PrepareScript("SelfDestruct();".Base64Encode());
             botScript.Compile();
             ScriptGlobals globals = new ScriptGlobals(arena, bot, new List<Bot>(), new List<Message>());
 
@@ -55,7 +55,7 @@ namespace BotRetreat2018.Scripting.Tests
             Bot bot7 = new Bot { LocationX = 1, LocationY = 2, CurrentPhysicalHealth = 25, Arena = arena, Team = otherTeam };
             Bot bot8 = new Bot { LocationX = 2, LocationY = 2, CurrentPhysicalHealth = 25, Arena = arena, Team = otherTeam };
 
-            Script botScript = await BotScript.PrepareScript("SelfDestruct();".Base64Encode());
+            Script botScript = BotScript.PrepareScript("SelfDestruct();".Base64Encode());
             botScript.Compile();
             ScriptGlobals globals = new ScriptGlobals(arena, bot, new List<Bot> { bot1, bot2, bot3, bot4, bot5, bot6, bot7, bot8 }, new List<Message>());
 
@@ -102,7 +102,7 @@ namespace BotRetreat2018.Scripting.Tests
             Bot bot15 = new Bot { LocationX = 3, LocationY = 4, CurrentPhysicalHealth = 10, Arena = arena, Team = otherTeam };
             Bot bot16 = new Bot { LocationX = 4, LocationY = 4, CurrentPhysicalHealth = 10, Arena = arena, Team = otherTeam };
 
-            Script botScript = await BotScript.PrepareScript("SelfDestruct();".Base64Encode());
+            Script botScript = BotScript.PrepareScript("SelfDestruct();".Base64Encode());
             botScript.Compile();
             ScriptGlobals globals = new ScriptGlobals(arena, bot, new List<Bot> { bot01, bot02, bot03, bot04, bot05, bot06, bot07, bot08, bot09, bot10, bot11, bot12, bot13, bot14, bot15, bot16 }, new List<Message>());
 

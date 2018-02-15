@@ -16,22 +16,19 @@ namespace BotRetreat2018.Scripting
 {
     public static class BotScript
     {
-        public static Task<Script<Object>> PrepareScript(String script)
+        public static Script<Object> PrepareScript(String script)
         {
-            return Task.Run(() =>
-            {
-                var decodedScript = script.Base64Decode();
-                var mscorlib = typeof(Object).Assembly;
-                var systemCore = typeof(Enumerable).Assembly;
-                var botRetreatModel = typeof(Position).Assembly;
-                var botRetreatScripting = typeof(IBot).Assembly;
-                var dynamic = typeof(DynamicAttribute).Assembly;
-                var scriptOptions = ScriptOptions.Default.AddReferences(mscorlib, systemCore, botRetreatModel, botRetreatScripting, dynamic);
-                scriptOptions = scriptOptions.WithImports("System", "System.Linq", "System.Collections", "System.Collections.Generic", "BotRetreat2018.Model", "BotRetreat2018.Scripting.Interfaces", "System.Runtime.CompilerServices");
-                var botScript = CSharpScript.Create(decodedScript, scriptOptions, typeof(ScriptGlobals));
-                botScript.WithOptions(botScript.Options.AddReferences(mscorlib, systemCore));
-                return botScript;
-            });
+            var decodedScript = script.Base64Decode();
+            var mscorlib = typeof(Object).Assembly;
+            var systemCore = typeof(Enumerable).Assembly;
+            var botRetreatModel = typeof(Position).Assembly;
+            var botRetreatScripting = typeof(IBot).Assembly;
+            var dynamic = typeof(DynamicAttribute).Assembly;
+            var scriptOptions = ScriptOptions.Default.AddReferences(mscorlib, systemCore, botRetreatModel, botRetreatScripting, dynamic);
+            scriptOptions = scriptOptions.WithImports("System", "System.Linq", "System.Collections", "System.Collections.Generic", "BotRetreat2018.Model", "BotRetreat2018.Scripting.Interfaces", "System.Runtime.CompilerServices");
+            var botScript = CSharpScript.Create(decodedScript, scriptOptions, typeof(ScriptGlobals));
+            botScript.WithOptions(botScript.Options.AddReferences(mscorlib, systemCore));
+            return botScript;
         }
 
         public static async Task<ScriptValidationDto> ValidateScript(String script)
@@ -46,7 +43,7 @@ namespace BotRetreat2018.Scripting
                 return scriptValidation;
             }
 
-            var botScript = await PrepareScript(script);
+            var botScript = PrepareScript(script);
 
             ImmutableArray<Diagnostic> diagnostics;
 
@@ -58,59 +55,59 @@ namespace BotRetreat2018.Scripting
 
             if (!diagnostics.Any())
             {
-                var task = Task.Run(() =>
+                var arena = new Arena { Width = 10, Height = 10, Name = "Arena" };
+                var team = new Team { Name = "MyTeam", Password = "Password" };
+                var enemyTeam = new Team { Name = "EnemyTeam", Password = "Password" };
+                var bot = new Bot
                 {
-                    var arena = new Arena { Width = 10, Height = 10, Name = "Arena" };
-                    var team = new Team { Name = "MyTeam", Password = "Password" };
-                    var enemyTeam = new Team { Name = "EnemyTeam", Password = "Password" };
-                    var bot = new Bot
-                    {
-                        Id = Guid.NewGuid(),
-                        Name = "Bot",
-                        MaximumPhysicalHealth = 100,
-                        CurrentPhysicalHealth = 100,
-                        MaximumStamina = 100,
-                        CurrentStamina = 100,
-                        LocationX = 1,
-                        LocationY = 1,
-                        Orientation = Orientation.South,
-                        Arena = arena,
-                        Team = team
-                    };
-                    var friendBot = new Bot
-                    {
-                        Id = Guid.NewGuid(),
-                        Name = "Friend",
-                        MaximumPhysicalHealth = 100,
-                        CurrentPhysicalHealth = 100,
-                        MaximumStamina = 100,
-                        CurrentStamina = 100,
-                        LocationX = 1,
-                        LocationY = 3,
-                        Orientation = Orientation.North,
-                        Arena = arena,
-                        Team = team
-                    };
-                    var enemyBot = new Bot
-                    {
-                        Id = Guid.NewGuid(),
-                        Name = "Enemy",
-                        MaximumPhysicalHealth = 100,
-                        CurrentPhysicalHealth = 100,
-                        MaximumStamina = 100,
-                        CurrentStamina = 100,
-                        LocationX = 1,
-                        LocationY = 5,
-                        Orientation = Orientation.North,
-                        Arena = arena,
-                        Team = team
-                    };
-                    var coreGlobals = new ScriptGlobals(arena, bot, new[] { bot, friendBot, enemyBot }.ToList(), new List<Message>());
+                    Id = Guid.NewGuid(),
+                    Name = "Bot",
+                    MaximumPhysicalHealth = 100,
+                    CurrentPhysicalHealth = 100,
+                    MaximumStamina = 100,
+                    CurrentStamina = 100,
+                    LocationX = 1,
+                    LocationY = 1,
+                    Orientation = Orientation.South,
+                    Arena = arena,
+                    Team = team
+                };
+                var friendBot = new Bot
+                {
+                    Id = Guid.NewGuid(),
+                    Name = "Friend",
+                    MaximumPhysicalHealth = 100,
+                    CurrentPhysicalHealth = 100,
+                    MaximumStamina = 100,
+                    CurrentStamina = 100,
+                    LocationX = 1,
+                    LocationY = 3,
+                    Orientation = Orientation.North,
+                    Arena = arena,
+                    Team = team
+                };
+                var enemyBot = new Bot
+                {
+                    Id = Guid.NewGuid(),
+                    Name = "Enemy",
+                    MaximumPhysicalHealth = 100,
+                    CurrentPhysicalHealth = 100,
+                    MaximumStamina = 100,
+                    CurrentStamina = 100,
+                    LocationX = 1,
+                    LocationY = 5,
+                    Orientation = Orientation.North,
+                    Arena = arena,
+                    Team = team
+                };
+                var coreGlobals = new ScriptGlobals(arena, bot, new[] { bot, friendBot, enemyBot }.ToList(), new List<Message>());
+                var task = Task.Run(async () =>
+                {
                     using (var sw = new SimpleStopwatch())
                     {
                         try
                         {
-                            botScript.RunAsync(coreGlobals).Wait();
+                            await botScript.RunAsync(coreGlobals);
                         }
                         catch (Exception ex)
                         {
@@ -130,6 +127,7 @@ namespace BotRetreat2018.Scripting
                         Message = "Your script did not finish in a timely fashion!"
                     });
                     scriptValidation.RunTimeInMilliseconds = Int64.MaxValue;
+                    task.Dispose();
                 }
             }
 

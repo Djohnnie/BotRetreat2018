@@ -57,6 +57,8 @@ namespace BotRetreat2018.Scripting
         public const LastAction MELEE_ATTACK = LastAction.MeleeAttack;
         public const LastAction SELF_DESTRUCTING = LastAction.SelfDestruct;
         public const LastAction SCRIPT_ERROR = LastAction.ScriptError;
+        public const LastAction DYING = LastAction.Died;
+        public const LastAction TELEPORTING = LastAction.Teleport;
 
         public const Orientation NORTH = Orientation.North;
         public const Orientation EAST = Orientation.East;
@@ -200,38 +202,48 @@ namespace BotRetreat2018.Scripting
             {
                 // Check the maximum teleport range distance.
                 var rangeDistance = CalculateRangeDistance(x, y);
-                if (rangeDistance <= MAXIMUM_TELEPORT)
+                if (rangeDistance > MAXIMUM_TELEPORT)
                 {
-                    // Drain stamina (-10).
-                    _d5a8c937f540473f9d5f40269401f254 -= 10;
-                    // Teleport to location.
-                    _a269ff57246b40fcb2d16fc97f5dea6c = x;
-                    _08389405491042dd89325d46355263d1 = y;
-                    _fd832498b5c4470bb4ac626ee3b3952d = LastAction.Teleport;
-
-                    // Check for bots on teleport location.
-                    var bot = FindBotInRange(x, y);
-                    // If a bot is at your teleport location...
-                    if (bot != null)
+                    List<Position> possibleTeleportLocations = new List<Position>();
+                    for (int xx = LocationX - MAXIMUM_TELEPORT / 2; xx < LocationX + MAXIMUM_TELEPORT / 2 + 1; xx++)
                     {
-                        // Damage it with your remaining physical health.
-                        DamageBot(bot, PhysicalHealth);
-                        // Damage yourself with its remaining physical health.
-                        DamageYourself(bot.CurrentPhysicalHealth);
+                        for (int yy = LocationY - MAXIMUM_TELEPORT / 2; yy < LocationY + MAXIMUM_TELEPORT / 2 + 1; yy++)
+                        {
+                            if (xx > -1 && xx < Width && yy > -1 && yy < Height)
+                            {
+                                if (!(xx == LocationX && yy == LocationY))
+                                {
+                                    possibleTeleportLocations.Add(new Position { X = (Int16)xx, Y = (Int16)yy });
+                                }
+                            }
+                        }
                     }
-                }
-                else
-                {
-                    // Teleport to a random destination within teleport range.
-                    var randomX = x;
-                    var randomY = y;
-                    bool collided = true;
-                    do
+                    if (possibleTeleportLocations.Count == 0)
                     {
-                        randomX = (Int16)_randomGenerator.Next(LocationX - MAXIMUM_TELEPORT / 2, LocationX + MAXIMUM_TELEPORT / 2);
-                        randomY = (Int16)_randomGenerator.Next(LocationY - MAXIMUM_TELEPORT / 2, LocationY + MAXIMUM_TELEPORT / 2);
-                        collided = WillColide(randomX, randomY);
-                    } while (collided);
+                        return;
+                    }
+
+                    Position possibleTeleportLocation = possibleTeleportLocations[_randomGenerator.Next(0, possibleTeleportLocations.Count)];
+                    x = possibleTeleportLocation.X;
+                    y = possibleTeleportLocation.Y;
+                }
+
+                // Drain stamina (-10).
+                _d5a8c937f540473f9d5f40269401f254 -= 10;
+                // Teleport to location.
+                _a269ff57246b40fcb2d16fc97f5dea6c = x;
+                _08389405491042dd89325d46355263d1 = y;
+                _fd832498b5c4470bb4ac626ee3b3952d = LastAction.Teleport;
+
+                // Check for bots on teleport location.
+                var bot = FindBotInRange(x, y);
+                // If a bot is at your teleport location...
+                if (bot != null)
+                {
+                    // Damage it with your remaining physical health.
+                    DamageBot(bot, PhysicalHealth);
+                    // Damage yourself with its remaining physical health.
+                    DamageYourself(bot.CurrentPhysicalHealth);
                 }
             }
         }
@@ -455,7 +467,7 @@ namespace BotRetreat2018.Scripting
         {
             var randomX = (Int16)_randomGenerator.Next(LocationX - MAXIMUM_RANGE / 2, LocationX + MAXIMUM_RANGE / 2);
             var randomY = (Int16)_randomGenerator.Next(LocationY - MAXIMUM_RANGE / 2, LocationY + MAXIMUM_RANGE / 2);
-            return new Position { X = x, Y = y };
+            return new Position { X = randomX, Y = randomY };
         }
 
         private Boolean WillColide()

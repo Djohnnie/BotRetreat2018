@@ -15,7 +15,7 @@ namespace BotRetreat2018.DataAccess
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseSqlServer("");
+            optionsBuilder.UseSqlServer("Server=my.djohnnie.be;Database=BotRetreat2018;User Id=sa;Password=Gadash2510383211;");
         }
 
         public void InitializeDatabase()

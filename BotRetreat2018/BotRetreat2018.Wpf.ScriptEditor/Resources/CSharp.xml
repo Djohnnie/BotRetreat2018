@@ -3,8 +3,10 @@
 <Syntax name="C#">
   <HighlightWordsRule name="Reserved language words">
     <Words>
-      if else switch case break do while for foreach in as is typeof new class void using namespace
-      public private protected internal partial get set return readonly override virtual var
+      if else switch case break do while for foreach in as is typeof new class void using namespace static
+      public private protected internal partial get set return readonly override virtual var async await
+      yield abstract interface continue default null params ref out sealed throw value try catch finally
+      base lock struct volatile enum this sizeof const
     </Words>
     <IgnoreCase>false</IgnoreCase>
     <Foreground>#0707FD</Foreground>
@@ -264,15 +266,18 @@
   <HighlightWordsRule name="Standard functions">
     <Words>
       IDLING TURNING_LEFT TURNING_RIGHT TURNING_AROUND MOVING_FORWARD RANGED_ATTACK MELEE_ATTACK SELF_DESTRUCTING
-      NORTH EAST SOUTH WEST
-      Width Height Location Location X Y
+      DYING TELEPORTING SCRIPT_ERROR NORTH EAST SOUTH WEST
+      MELEE_DAMAGE MELEE_BACKSTAB_DAMAGE RANGED_DAMAGE SELF_DESTRUCT_DAMAGE SELF_DESTRUCT_RADIUS_DAMAGE
+      MAXIMUM_RANGE MAXIMUM_TELEPORT
+      Width Height LocationX LocationY
       MaximumPhysicalHealth PhysicalHealth PhysicalHealthDrain
       MaximumMentalHealth MentalHealth MentalHealthDrain
       MaximumStamina Stamina StaminaDrain
       Orientation LastAction CurrentAction Vision Bots
       FriendlyBots EnemyBots PredatorBots Name
       MoveForward TurnLeft TurnRight TurnAround MeleeAttack RangedAttack SelfDestruct
-      StoreInMemory LoadFromMemory RemoveFromMemory
+      StoreInMemory LoadFromMemory RemoveFromMemory Teleport SendMessage
+      PhysicalDamageDone Kills
     </Words>
     <IgnoreCase>false</IgnoreCase>
     <Foreground>#007F0E</Foreground>
@@ -288,6 +293,14 @@
     <FontStyle>Normal</FontStyle>
   </HighlightLineRule>
 
+  <AdvancedHighlightRule name="Braces">
+    <Expression>([{}\[\]])</Expression>
+    <IgnoreCase>true</IgnoreCase>
+    <Foreground>#AAAAAA</Foreground>
+    <FontWeight>Bold</FontWeight>
+    <FontStyle>Normal</FontStyle>
+  </AdvancedHighlightRule>
+  
   <AdvancedHighlightRule name="Numbers">
     <Expression>\b([0-9]+)\b</Expression>
     <IgnoreCase>true</IgnoreCase>
